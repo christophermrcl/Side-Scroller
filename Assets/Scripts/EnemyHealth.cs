@@ -13,9 +13,20 @@ public class EnemyHealth : MonoBehaviour
     public Slider HealthSlider;
 
     public GameObject EnemyParent;
+
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+
+    public float floatUpSpeed = 0.01f;
+    public float fadeOutSpeed = 1f;
+
+    public AudioSource deathsfx;
     // Start is called before the first frame update
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        originalColor = spriteRenderer.color;
+
         HealthBar.SetActive(false);
         CurrentHealth = MaxHealth;
     }
@@ -35,7 +46,23 @@ public class EnemyHealth : MonoBehaviour
 
         if(CurrentHealth <= 0)
         {
-            Destroy(EnemyParent);
+            deathsfx.Play();
+            StartCoroutine(DeathAnimation());
         }
+    }
+
+    private IEnumerator DeathAnimation()
+    {
+        float fadeOutProgress = 0f;
+
+        while (fadeOutProgress < 1f)
+        {
+            transform.position += Vector3.up * floatUpSpeed * Time.deltaTime;
+            fadeOutProgress += fadeOutSpeed * Time.deltaTime;
+            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1 - fadeOutProgress);
+            yield return null;
+        }
+
+        Destroy(EnemyParent);
     }
 }

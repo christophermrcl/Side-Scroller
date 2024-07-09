@@ -18,8 +18,15 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject AttackCollider;
 
+    private PauseState pause;
+
+    public AudioSource slash;
+    public AudioSource jump;
+
     void Start()
     {
+        pause = GameObject.FindGameObjectWithTag("PauseState").GetComponent<PauseState>();
+
         // Ambil komponen rigidbody dari objek player
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -79,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E) && !isAttacking)
         {
+            slash.Play();
             isAttacking = true;
             
             StartCoroutine(CDAttack());
@@ -94,6 +102,7 @@ public class PlayerMovement : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Space) && Mathf.Abs(rb.velocity.y) < 0.001f && !isAttacking)
         {
+            jump.Play();
             rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
             
             PlayJump();
@@ -135,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Menggerakan player ke kanan atau kiri menggunakan transform.translate
         
-        transform.Translate(new Vector3(horizontalInput * speed * Time.deltaTime, 0f, 0f));
+        transform.Translate(new Vector3(horizontalInput * speed * Time.deltaTime * pause.isPause, 0f, 0f));
         SpriteFlip(horizontalInput);
 
         if (isAttacking && !isAnimAttack)

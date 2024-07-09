@@ -33,9 +33,14 @@ public class StdEnemy : MonoBehaviour
     private OnArea AttackArea;
 
     public GameObject AttackCollider;
+
+    private PauseState pause;
+
     // Start is called before the first frame update
     void Start()
     {
+        pause = GameObject.FindGameObjectWithTag("PauseState").GetComponent<PauseState>();
+
         AttackArea = AreaCollider.GetComponent<OnArea>();
         AttackCollider.SetActive(false);
         PlayWalk();
@@ -71,10 +76,10 @@ public class StdEnemy : MonoBehaviour
     private IEnumerator AttackingPlayer()
     {
         PlayAttack();
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.5f);
         AttackCollider.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        PlayIdle();
+        yield return new WaitForSeconds(0.1f);
+        PlayWalk();
         AttackCollider.SetActive(false);
         yield return new WaitForSeconds(1f);
         isAttacking = false;
@@ -134,14 +139,14 @@ public class StdEnemy : MonoBehaviour
         }
         if (movingLeft)
         {
-            AreaCollider.transform.localScale = new Vector3(-1,AreaCollider.transform.localScale.x);
-            AttackCollider.transform.localScale = new Vector3(-1, AttackCollider.transform.localScale.x);
+            AreaCollider.transform.localScale = new Vector3(-1,1);
+            AttackCollider.transform.localScale = new Vector3(-1,1);
             EnemySprite.flipX = true;
         }
         else
         {
-            AreaCollider.transform.localScale = new Vector3(1, AreaCollider.transform.localScale.x);
-            AttackCollider.transform.localScale = new Vector3(1, AttackCollider.transform.localScale.x);
+            AreaCollider.transform.localScale = new Vector3(1, 1);
+            AttackCollider.transform.localScale = new Vector3(1, 1);
             EnemySprite.flipX = false;
         }
         if (movingLeft && gameObject.transform.position.x <= OriginalPosition.x - MovementLimit)
@@ -156,7 +161,7 @@ public class StdEnemy : MonoBehaviour
 
         if (isPatrol)
         {
-            transform.Translate(new Vector3(horizontalDirection * speed * Time.deltaTime, 0f, 0f));
+            transform.Translate(new Vector3(horizontalDirection * speed * Time.deltaTime * pause.isPause, 0f, 0f));
         }
 
         ToPlayerOnAggro();
@@ -200,7 +205,7 @@ public class StdEnemy : MonoBehaviour
                 movingLeft = true;
             }
 
-            transform.Translate(new Vector3(horizontalDirection * speed * Time.deltaTime, 0f, 0f));
+            transform.Translate(new Vector3(horizontalDirection * speed * Time.deltaTime * pause.isPause, 0f, 0f));
         }
     }
     

@@ -9,6 +9,8 @@ TagManager:
   - Gear
   - Trigger
   - Enemy
+  - CheckpointMng
+  - PauseState
   layers:
   - Default
   - TransparentFX
